@@ -78,49 +78,67 @@ class Router
 
     public static function route()
     {
+        // Gets the URI and the request type
         $request_uri = Request::uri();
         $request_type = Request::type();
 
         $matches = [];
 
+        // goes through the routes (from routes.php) and creates array items for every one
         foreach (self::$routes as $route) {
             $matches[] = [
                 'route' => $route,
+                // index is a way of measuring how much the request URI matches a specific route if it doesn't match, it's 0. if it does it's >0
                 'index' => self::check($route, $request_uri) > 0,
+                // if request type matches then this is true
                 'request' => ($route['type'] == $request_type)
             ];
         }
 
         $bad_request = false;
         $found = false;
+
+        // Goes through all the matches
         foreach ($matches as $match) {
+
+            // if the URI is correct and the request type is also correct
             if ($match['index'] && $match['request']) {
 
+                // goes through the parts of the URI and checks if the controller is expecting a variable there
                 foreach ($match['route']['uri'] as $key => $value) {
                     if (self::needsVar($value)) {
+                        // if it is then the variable is passed on to the Request class
                         Request::passGet(self::getVarName($value), $request_uri[$key]);
                     }
                 }
 
+                // finds the controller the route is requesting
                 $controller = 'App\Controllers\\' . ucfirst(explode('@',$match['route']['controller'])[0]);
 
+                // creates an instance of it
                 $controller = new $controller;
 
+                // if the controller doesn't return true when called as a function it throws an exception
                 if($controller() != true){
                     throw new ControllerNotFoundException;
                 }
 
+                // finds the function that needs to be called in the controller
                 $function = explode('@',$match['route']['controller'])[1];
 
+                // generates the contents of the temporary file to be included in index.php
                 $file_contents = self::TEMP_FILE_HEADER . ViewParser::parse($controller->$function());
 
+                // generates the temporary file
                 $temp_file = self::generateTempFile();
 
+                // writes the contents to it
                 fwrite($temp_file, $file_contents);
 
                 return true;
             }
 
+            // if the URI is correct but the request type is not it sets $bad_request to true
             if($match['index'] && !$match['request']){
                 $bad_request = true;
             }
@@ -130,6 +148,7 @@ class Router
             }
         }
 
+        // TODO: Generate temp file for 404 and 400 here
         if($bad_request == true){
             return ViewParser::parse(ErrorController::badRequest());
         }elseif(!$found){

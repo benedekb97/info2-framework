@@ -19,6 +19,7 @@ class Auth
         return self::$user != null;
     }
 
+    // If the user is set set static $user variable the currently logged in user
     public static function setup()
     {
         if(isset($_SESSION['user_id'])) {

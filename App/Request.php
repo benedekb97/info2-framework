@@ -59,6 +59,7 @@ class Request extends Base
         return $uri;
     }
 
+    // Goes through $_GET and $_POST variables and put all variables in static arrays
     public static function create()
     {
         foreach ($_GET as $key => $item) {
