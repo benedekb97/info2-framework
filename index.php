@@ -6,6 +6,8 @@ use Exception;
 
 require_once "bootstrap/autoload.php";
 require_once "bootstrap/init.php";
+
+
 try{
     Router::route();
 

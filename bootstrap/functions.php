@@ -33,6 +33,10 @@ function env($env_name)
                     $value = $line[1];
                 }
 
+                if(strlen($value)>0 && ($value[strlen($value)-1] == "\r" || $value[strlen($value)-1] == "\n")){
+                    $value = substr($value, 0, -1);
+                }
+
                 return $value;
             }
         }
