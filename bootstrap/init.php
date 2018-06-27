@@ -20,8 +20,6 @@ Base::db_connect(env('MYSQL_HOST'), env('MYSQL_USER'), env('MYSQL_PASSWORD'), en
 
 Request::create();
 
-if (isset($_SESSION['user_id']) && $_SESSION['user_id'] != '') {
-    $current_user = new User($_SESSION['user_id']);
-}
+Auth::setup();
 
 require_once __DIR__ . "/../routes/routes.php";
