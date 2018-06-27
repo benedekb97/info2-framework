@@ -1,5 +1,7 @@
 <?php
 
+use App\View;
+
 function env($env_name){
     $env_location = __DIR__. '/../.env';
 
@@ -38,4 +40,8 @@ function env($env_name){
     fclose($env);
 
     return false;
+}
+
+function view($view_name){
+    return new View($view_name);
 }

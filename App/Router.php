@@ -108,7 +108,7 @@ class Router
 
                 $function = explode('@',$match['route']['controller'])[1];
 
-                return $controller::$function();
+                return ViewParser::parse($controller::$function());
             }
 
             if($match['index'] && !$match['request']){
@@ -121,12 +121,12 @@ class Router
         }
 
         if($bad_request == true){
-            return ErrorController::badRequest();
+            return ViewParser::parse(ErrorController::badRequest());
         }elseif(!$found){
-            return ErrorController::notFound();
+            return ViewParser::parse(ErrorController::notFound());
         }
 
-        return ErrorController::notFound();
+        return ViewParser::parse(ErrorController::notFound());
 
 
         return true;
