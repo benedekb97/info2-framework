@@ -12,6 +12,12 @@ class View
         include $view->getPath();
     }
 
+    /**
+     * View constructor.
+     * @param $name
+     * @param null $variables
+     * @return View
+     */
     public function __construct($name, $variables = null){
 
         $name = str_replace('.', '/', $name);

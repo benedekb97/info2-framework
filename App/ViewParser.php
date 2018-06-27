@@ -25,6 +25,11 @@ class ViewParser
 
     const EXTENDS_LAYOUT_REGEX = "/\@extends\([\' | \"](.*)[\' | \"]\)\;?/i";
 
+    /**
+     * @param View $view
+     * @param View|null $referenced_by
+     * @return null|string|string[]
+     */
     public static function parse(View $view, View $referenced_by = null)
     {
         // Initialise contents of temporary file
