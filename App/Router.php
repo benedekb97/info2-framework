@@ -7,6 +7,10 @@ use ControllerNotFoundException;
 
 class Router
 {
+    const TEMP_FILE_HEADER = "<?php
+    
+    namespace App;?>";
+
     protected static $routes;
 
     public static function get($uri, $controller, $name = ''){
@@ -108,7 +112,13 @@ class Router
 
                 $function = explode('@',$match['route']['controller'])[1];
 
-                return ViewParser::parse($controller::$function());
+                $file_contents = self::TEMP_FILE_HEADER . ViewParser::parse($controller->$function());
+
+                $temp_file = self::generateTempFile();
+
+                fwrite($temp_file, $file_contents);
+
+                return true;
             }
 
             if($match['index'] && !$match['request']){
@@ -127,9 +137,25 @@ class Router
         }
 
         return ViewParser::parse(ErrorController::notFound());
+    }
 
+    public static function generateTempFile()
+    {
+        $file_name = "";
 
-        return true;
+        $available_characters = "0123456789abcdef";
+
+        $length = rand(16,32);
+
+        for($i = 0; $i < $length; $i++) {
+            $file_name .= $available_characters[rand(0,15)];
+        }
+
+        $file_name .= ".tmp.php";
+
+        $_SESSION['temp_file_name'] = $file_name;
+
+        return fopen(__DIR__ . "/../temp/" . $file_name, "w");
     }
 
     /**

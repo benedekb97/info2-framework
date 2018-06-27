@@ -8,4 +8,11 @@
             <b>Szeretem a kukkert</b>
         </div>
     </div>
+    <form action="{{ Router::getLink('auth.login'); }}" method="POST">
+        <input type="text" name="email" placeholder="Email">
+        <input type="password" name="password" placeholder="Password">
+        <input type="submit" value="Login">
+    </form>
+
+{{ "fasz" }}
 @endsection

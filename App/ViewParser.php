@@ -24,10 +24,10 @@ class ViewParser
 
         if($referenced_by!=null){
 
+
             $child_path = $referenced_by->getPath();
 
             $child_contents = file_get_contents($child_path);
-
 
             $sections = [];
 
@@ -41,7 +41,6 @@ class ViewParser
                 $sections[$section_name] = $section_content;
 
                 $child_contents = preg_filter(self::LAYOUT_SECTION_MIDDLE_REGEX, "// SECTION DONE", $child_contents, 1);
-
             }
 
             while(preg_match(self::LAYOUT_YIELD_REGEX, $contents, $results)){
@@ -55,10 +54,13 @@ class ViewParser
 
             }
 
+
+            while(preg_match(self::ECHO_REGEX, $contents)) {
+                $contents = preg_filter(self::ECHO_REGEX, self::ECHO_REGEX_REPLACE, $contents, 1);
+            }
+
             return $contents;
         }
-
-        $contents = preg_replace(self::ECHO_REGEX, self::ECHO_REGEX_REPLACE, $contents);
 
         if(preg_match(self::EXTENDS_LAYOUT_REGEX, $contents, $results)) {
 
@@ -66,6 +68,12 @@ class ViewParser
 
             return self::parse($parent_view, $view);
         }
+
+        while(preg_match(self::ECHO_REGEX, $contents)) {
+            $contents = preg_filter(self::ECHO_REGEX, self::ECHO_REGEX_REPLACE, $contents, 1);
+        }
+
+        return $contents;
     }
 
 }

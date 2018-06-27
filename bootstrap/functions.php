@@ -2,7 +2,8 @@
 
 use App\View;
 
-function env($env_name){
+function env($env_name)
+{
     $env_location = __DIR__. '/../.env';
 
     $env = fopen($env_location, 'r');
@@ -42,6 +43,20 @@ function env($env_name){
     return false;
 }
 
-function view($view_name){
+function view($view_name)
+{
     return new View($view_name);
+}
+
+function dd($variable)
+{
+    ?>
+    <pre>
+        <?php
+        var_dump($variable);
+        ?>
+    </pre>
+    <?php
+
+    die();
 }
