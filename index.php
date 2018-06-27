@@ -18,6 +18,7 @@ try{
 
         unlink('temp/' . $_SESSION['temp_file_name']);
         unset($_SESSION['temp_file_name']);
+        unset($_SESSION['temp_passed_variables']);
     }
 }catch(Exception $exception){
 
