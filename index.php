@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\User;
 use Exception;
 
 require_once "bootstrap/autoload.php";
@@ -14,7 +15,9 @@ try{
     if(isset($_SESSION['temp_file_name'])) {
         include 'temp/' . $_SESSION['temp_file_name'];
 
+
         unlink('temp/' . $_SESSION['temp_file_name']);
+        unset($_SESSION['temp_file_name']);
     }
 }catch(Exception $exception){
 

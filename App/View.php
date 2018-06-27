@@ -6,12 +6,13 @@ class View
 {
     private $path;
     private $contents;
+    private $variables;
 
     public static function render(View $view){
         include $view->getPath();
     }
 
-    public function __construct($name){
+    public function __construct($name, $variables = null){
 
         $name = str_replace('.', '/', $name);
 
@@ -21,6 +22,7 @@ class View
 
         $this->path = $name;
 
+        $this->variables = $variables;
 
         $this->contents = file_get_contents($this->path);
 
@@ -35,5 +37,10 @@ class View
     public function getContents()
     {
         return $this->contents;
+    }
+
+    public function getVariables()
+    {
+        return $this->variables;
     }
 }

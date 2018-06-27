@@ -3,13 +3,15 @@
 namespace App\Controllers;
 
 use App\Controller;
-use App\ViewParser;
+use App\Models\User;
 
 class HomeController extends Controller
 {
 
     public function index()
     {
-        return view('index');
+        $users = User::all();
+
+        return view('index', ['users' => $users]);
     }
 }

@@ -47,9 +47,9 @@ function env($env_name)
     return false;
 }
 
-function view($view_name)
+function view($view_name, $variables)
 {
-    return new View($view_name);
+    return new View($view_name, $variables);
 }
 
 function dd($variable)
