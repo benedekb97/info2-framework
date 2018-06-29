@@ -19,7 +19,7 @@ try{
         include 'temp/' . $_SESSION['temp_file_name'];
 
 
-//        unlink('temp/' . $_SESSION['temp_file_name']);
+        unlink('temp/' . $_SESSION['temp_file_name']);
         unset($_SESSION['temp_file_name']);
         unset($_SESSION['temp_passed_variables']);
     }
