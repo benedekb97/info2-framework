@@ -7,6 +7,7 @@ class View
     private $path;
     private $contents;
     private $variables;
+    private $name;
 
     public static function render(View $view){
         include $view->getPath();
@@ -19,6 +20,8 @@ class View
      * @return View
      */
     public function __construct($name, $variables = null){
+
+        $this->name = $name;
 
         $name = str_replace('.', '/', $name);
 
@@ -48,5 +51,10 @@ class View
     public function getVariables()
     {
         return $this->variables;
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

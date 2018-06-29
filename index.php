@@ -15,14 +15,14 @@ try{
     // Does too much to write in such a small space
     Router::route();
 
-    if(isset($_SESSION['temp_file_name'])) {
-        include 'temp/' . $_SESSION['temp_file_name'];
+    if(isset($_SESSION['current_view'])) {
+        include 'temp/' . $_SESSION['cached_views'][$_SESSION['current_view']];
 
-
-        unlink('temp/' . $_SESSION['temp_file_name']);
-        unset($_SESSION['temp_file_name']);
-        unset($_SESSION['temp_passed_variables']);
+        unset($_SESSION['current_view']);
+        if(isset($_SESSION['temp_passed_variables'])){
+            unset($_SESSION['temp_passed_variables']);
+        }
     }
 }catch(Exception $exception){
-
+    echo "Controller not found";
 }

@@ -144,14 +144,32 @@ class Router
                 // finds the function that needs to be called in the controller
                 $function = explode('@',$match['route']['controller'])[1];
 
-                // generates the contents of the temporary file to be included in index.php
-                $file_contents = self::TEMP_FILE_HEADER . self::generateUseStatement() . "?>" . ViewParser::parse($controller->$function());
 
-                // generates the temporary file
-                $temp_file = self::generateTempFile();
+                /**
+                 * return View
+                 */
+                $view = $controller->$function();
 
-                // writes the contents to it
-                fwrite($temp_file, $file_contents);
+                $_SESSION['current_view'] = $view->getName();
+
+                if(!isset($_SESSION['cached_views'])) {
+                    $_SESSION['cached_views'] = [];
+                }
+
+                if(!array_key_exists($view->getName(), $_SESSION['cached_views'])){
+                    $file_contents = self::TEMP_FILE_HEADER . self::generateUseStatement() . "?>" . ViewParser::parse($controller->$function());
+
+                    // generates the temporary file
+                    $temp_file_name = self::generateCachedFile();
+
+                    $_SESSION['cached_views'][$view->getName()] = $temp_file_name;
+
+                    $temp_file = fopen(__DIR__ . "/../../temp/" . $temp_file_name, "w");
+
+                    // writes the contents to it
+                    fwrite($temp_file, $file_contents);
+                    fclose($temp_file);
+                }
 
                 return true;
             }
@@ -176,7 +194,7 @@ class Router
         return ViewParser::parse(ErrorController::notFound());
     }
 
-    public static function generateTempFile()
+    public static function generateCachedFile()
     {
         $file_name = "";
 
@@ -192,7 +210,7 @@ class Router
 
         $_SESSION['temp_file_name'] = $file_name;
 
-        return fopen(__DIR__ . "/../../temp/" . $file_name, "w");
+        return $file_name;
     }
 
     /**
