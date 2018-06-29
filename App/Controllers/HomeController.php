@@ -2,8 +2,9 @@
 
 namespace App\Controllers;
 
-use App\Controller;
+use App\Internal\Controller;
 use App\Models\User;
+use App\Internal\View;
 
 class HomeController extends Controller
 {

@@ -1,6 +1,6 @@
 <?php
 
-use App\View;
+use App\Internal\View;
 
 function env($env_name)
 {

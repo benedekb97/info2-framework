@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Base;
+use App\Internal\Model;
 
-class User extends Base
+class User extends Model
 {
     private $id;
     private $email;

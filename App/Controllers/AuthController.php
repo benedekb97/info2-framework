@@ -2,10 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Controller;
+use App\Internal\Controller;
 use App\Models\User;
-use App\Request;
-use App\Router;
+use App\Internal\Request;
+use App\Internal\Router;
 
 class AuthController extends Controller
 {

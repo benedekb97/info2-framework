@@ -2,6 +2,10 @@
 
 namespace App;
 
+use App\Internal\Auth;
+use App\Internal\Base;
+use App\Internal\Request;
+
 session_start();
 
 // Include functions

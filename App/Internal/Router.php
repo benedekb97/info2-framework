@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Internal;
 
 use App\Controllers\ErrorController;
 use ControllerNotFoundException;
@@ -9,7 +9,7 @@ class Router
 {
     const TEMP_FILE_HEADER = "<?php
     
-    namespace App;?>";
+    namespace App\Internal;";
 
     protected static $routes;
 
@@ -43,6 +43,24 @@ class Router
         $uri_section = trim($uri_section, '{}');
 
         return $uri_section;
+    }
+
+    private static function generateUseStatement()
+    {
+        $tmp = "use App\\Models\\{";
+        $new_use = "";
+
+        foreach(Base::getModels() as $model) {
+            $tmp .= $model . ", ";
+        }
+
+        for($i = 0; $i < strlen($tmp) - 2; $i++) {
+            $new_use .= $tmp[$i];
+        }
+
+        $new_use .= "};";
+
+        return $new_use;
     }
 
     protected static function check($route, $uri){
@@ -127,7 +145,7 @@ class Router
                 $function = explode('@',$match['route']['controller'])[1];
 
                 // generates the contents of the temporary file to be included in index.php
-                $file_contents = self::TEMP_FILE_HEADER . ViewParser::parse($controller->$function());
+                $file_contents = self::TEMP_FILE_HEADER . self::generateUseStatement() . "?>" . ViewParser::parse($controller->$function());
 
                 // generates the temporary file
                 $temp_file = self::generateTempFile();
@@ -174,7 +192,7 @@ class Router
 
         $_SESSION['temp_file_name'] = $file_name;
 
-        return fopen(__DIR__ . "/../temp/" . $file_name, "w");
+        return fopen(__DIR__ . "/../../temp/" . $file_name, "w");
     }
 
     /**

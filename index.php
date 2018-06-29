@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Internal\Router;
 use Exception;
 
 // Autoload classes
@@ -9,7 +10,6 @@ require_once "bootstrap/autoload.php";
 
 // Initialise static variables in classes, and such
 require_once "bootstrap/init.php";
-
 
 try{
     // Does too much to write in such a small space
@@ -19,7 +19,7 @@ try{
         include 'temp/' . $_SESSION['temp_file_name'];
 
 
-        unlink('temp/' . $_SESSION['temp_file_name']);
+//        unlink('temp/' . $_SESSION['temp_file_name']);
         unset($_SESSION['temp_file_name']);
         unset($_SESSION['temp_passed_variables']);
     }

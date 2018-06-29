@@ -12,4 +12,6 @@
     @else
     <a href="{{ Router::getLink('auth.logout'); }}">Log out</a>
     @endif
+
+    {{ Auth::user() }}
 @endsection
