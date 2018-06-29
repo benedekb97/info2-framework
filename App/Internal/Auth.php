@@ -9,6 +9,9 @@ class Auth
 {
     private static $user;
 
+    /**
+     * @return User
+     */
     public static function user()
     {
         return self::$user;

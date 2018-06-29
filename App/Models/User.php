@@ -6,10 +6,14 @@ use App\Internal\Model;
 
 class User extends Model
 {
-    private $id;
-    private $email;
-    private $password;
-    private $salt;
+    protected $attributes = ['email', 'password', 'salt'];
+
+    protected $table = 'users';
+
+    protected $id;
+    protected $email;
+    protected $password;
+    protected $salt;
 
     /**
      * @return string
@@ -148,5 +152,10 @@ class User extends Model
 
     public function __toString(){
         return "$this->id";
+    }
+
+    public function setEmail($email)
+    {
+        $this->email = $email;
     }
 }
