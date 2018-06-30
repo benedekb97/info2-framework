@@ -11,6 +11,10 @@ class Cache
 
     public static function setup()
     {
+        if(!file_exists(__DIR__ . "/../../cache")){
+            mkdir(__DIR__ . "/../../cache", 0777, true);
+        }
+
         if (!file_exists(self::CACHED_VIEWS_FILE)) {
             $file = fopen(self::CACHED_VIEWS_FILE, "w");
             fclose($file);
