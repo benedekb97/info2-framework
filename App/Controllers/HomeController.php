@@ -17,4 +17,9 @@ class HomeController extends Controller
 
         return view('index', ['users' => $users]);
     }
+
+    public function kurva()
+    {
+        return view('kurva');
+    }
 }
