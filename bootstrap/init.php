@@ -4,6 +4,7 @@ namespace App;
 
 use App\Internal\Auth;
 use App\Internal\Base;
+use App\Internal\Cache;
 use App\Internal\Request;
 
 session_start();
@@ -28,6 +29,9 @@ Request::create();
 
 // Set Auth static variables
 Auth::setup();
+
+// Setup Cache
+Cache::setup();
 
 // Include the routes file, which sets all the available routes in the static Router class
 require_once __DIR__ . "/../routes/routes.php";

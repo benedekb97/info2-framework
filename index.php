@@ -16,7 +16,7 @@ try{
     Router::route();
 
     if(isset($_SESSION['current_view'])) {
-        include 'temp/' . $_SESSION['cached_views'][$_SESSION['current_view']];
+        include 'cache/' . $_SESSION['current_view'] . ".tmp.php";
 
         unset($_SESSION['current_view']);
         if(isset($_SESSION['temp_passed_variables'])){

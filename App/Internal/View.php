@@ -57,4 +57,9 @@ class View
     {
         return $this->name;
     }
+
+    public function isCached()
+    {
+        return Cache::check($this);
+    }
 }

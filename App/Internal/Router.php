@@ -152,23 +152,8 @@ class Router
 
                 $_SESSION['current_view'] = $view->getName();
 
-                if(!isset($_SESSION['cached_views'])) {
-                    $_SESSION['cached_views'] = [];
-                }
-
-                if(!array_key_exists($view->getName(), $_SESSION['cached_views'])){
-                    $file_contents = self::TEMP_FILE_HEADER . self::generateUseStatement() . "?>" . ViewParser::parse($controller->$function());
-
-                    // generates the temporary file
-                    $temp_file_name = self::generateCachedFile();
-
-                    $_SESSION['cached_views'][$view->getName()] = $temp_file_name;
-
-                    $temp_file = fopen(__DIR__ . "/../../temp/" . $temp_file_name, "w");
-
-                    // writes the contents to it
-                    fwrite($temp_file, $file_contents);
-                    fclose($temp_file);
+                if(!Cache::check($view)) {
+                    Cache::cache($view);
                 }
 
                 return true;
@@ -184,7 +169,7 @@ class Router
             }
         }
 
-        // TODO: Generate temp file for 404 and 400 here
+        // TODO: Generate cache file for 404 and 400 here
         if($bad_request == true){
             return ViewParser::parse(ErrorController::badRequest());
         }elseif(!$found){
@@ -192,25 +177,6 @@ class Router
         }
 
         return ViewParser::parse(ErrorController::notFound());
-    }
-
-    public static function generateCachedFile()
-    {
-        $file_name = "";
-
-        $available_characters = "0123456789abcdef";
-
-        $length = rand(16,32);
-
-        for($i = 0; $i < $length; $i++) {
-            $file_name .= $available_characters[rand(0,15)];
-        }
-
-        $file_name .= ".tmp.php";
-
-        $_SESSION['temp_file_name'] = $file_name;
-
-        return $file_name;
     }
 
     /**

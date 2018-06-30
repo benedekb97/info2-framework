@@ -43,17 +43,17 @@ class ViewParser
             $_SESSION['temp_passed_variables'] = $view->getVariables();
 
             // Go through all the variables and set new local variable equal to it
-            $contents = "<?php foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} ?>";
+            $contents = "<?php if(isset(\$_SESSION['temp_passed_variables'])){ foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} } ?>";
         }
 
         // Same, but is called if the original view is passed on to the parser again
         if($referenced_by != null && $referenced_by->getVariables() != null){
             $_SESSION['temp_passed_variables'] = $referenced_by->getVariables();
 
-            $contents = "<?php foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} ?>";
+            $contents = "<?php if(isset(\$_SESSION['temp_passed_variables'])){ foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} } ?>";
         }
 
-        // Add the contents of the view to the temp file contents
+        // Add the contents of the view to the cache file contents
         $contents .= file_get_contents($path);
 
         // Check if the view has been referenced by another (If it is a layout extended by a view)
