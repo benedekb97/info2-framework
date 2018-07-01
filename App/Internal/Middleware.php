@@ -3,10 +3,10 @@
 namespace App\Internal;
 
 
-class Controller
+class Middleware
 {
-
-    public function __invoke(){
+    public function check()
+    {
         return true;
     }
 }

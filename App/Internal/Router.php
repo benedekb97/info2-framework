@@ -7,28 +7,61 @@ use ControllerNotFoundException;
 
 class Router
 {
-    const TEMP_FILE_HEADER = "<?php
-    
-    namespace App\Internal;";
+    const TEMP_FILE_HEADER = "<?php namespace App\Internal;";
 
     protected static $routes;
 
-    public static function get($uri, $controller, $name = ''){
+    private static $prefixing;
+
+    public static function get($uri, $controller, $name = '', $middleware = null){
+
+        if(self::isPrefixActive()) {
+            if($uri == ''){
+                $uri = self::$prefixing['uri'];
+            }else{
+                $uri = self::$prefixing['uri'] . '/' . $uri;
+            }
+            $name = self::$prefixing['name'] . '.' .$name;
+            $middleware = self::$prefixing['middleware'];
+        }
+
         self::$routes[] = [
             'uri' => explode('/', $uri),
             'controller' => $controller,
             'type' => 'GET',
-            'name' => $name
+            'name' => $name,
+            'middleware' => $middleware
         ];
     }
 
-    public static function post($uri, $controller, $name = ''){
+    public static function post($uri, $controller, $name = '', $middleware = null){
+
+        if(self::isPrefixActive()) {
+            if($uri == ''){
+                $uri = self::$prefixing['uri'];
+            }else{
+                $uri = self::$prefixing['uri'] . '/' . $uri;
+            }
+            $name = self::$prefixing['name'] . '.' .$name;
+            $middleware = self::$prefixing['middleware'];
+        }
+
         self::$routes[] = [
             'uri' => explode('/', $uri),
             'controller' => $controller,
             'type' => 'POST',
-            'name' => $name
+            'name' => $name,
+            'middleware' => $middleware
         ];
+    }
+
+    public static function group($uri_prefix, $name_prefix, $callback, $middleware = null)
+    {
+        self::startPrefix($uri_prefix, $name_prefix, $middleware);
+
+        $callback();
+
+        self::endPrefix();
     }
 
     protected static function needsVar($uri_section){
@@ -109,7 +142,8 @@ class Router
                 // index is a way of measuring how much the request URI matches a specific route if it doesn't match, it's 0. if it does it's >0
                 'index' => self::check($route, $request_uri) > 0,
                 // if request type matches then this is true
-                'request' => ($route['type'] == $request_type)
+                'request' => ($route['type'] == $request_type),
+                'middleware' => $route['middleware']
             ];
         }
 
@@ -144,10 +178,22 @@ class Router
                 // finds the function that needs to be called in the controller
                 $function = explode('@',$match['route']['controller'])[1];
 
+                if($match['middleware'] != null) {
+                    $middleware = 'App\Middleware\\' . $match['middleware'];
 
-                /**
-                 * return View
-                 */
+                    $middleware = new $middleware;
+
+                    if(!$middleware->check()) {
+                        $_SESSION['current_view'] = 'errors.500';
+
+                        if(!Cache::check(view('errors.500'))) {
+                            Cache::cache(view('errors.500'));
+                        }
+
+                        return false;
+                    }
+                }
+
                 $view = $controller->$function();
 
                 $_SESSION['current_view'] = $view->getName();
@@ -188,6 +234,7 @@ class Router
         }
         $_SESSION['current_view'] = 'errors.404';
         return false;
+
     }
 
     /**
@@ -222,5 +269,29 @@ class Router
     public static function redirect($route, $vars = [])
     {
         header("Location: ".self::getLink($route, $vars));
+    }
+
+    private static function startPrefix($uri_prefix, $name_prefix, $middleware)
+    {
+        self::$prefixing = [
+            'active' => true,
+            'uri' => $uri_prefix,
+            'name' => $name_prefix,
+            'middleware' => $middleware
+        ];
+    }
+
+    private static function endPrefix()
+    {
+        self::$prefixing = [
+            'active' => false,
+            'uri' => null,
+            'name' => null,
+            'middleware' => null
+        ];
+    }
+    private static function isPrefixActive()
+    {
+        return self::$prefixing['active'] == true;
     }
 }
