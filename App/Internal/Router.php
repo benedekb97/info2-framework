@@ -273,22 +273,64 @@ class Router
 
     private static function startPrefix($uri_prefix, $name_prefix, $middleware)
     {
-        self::$prefixing = [
-            'active' => true,
-            'uri' => $uri_prefix,
-            'name' => $name_prefix,
-            'middleware' => $middleware
-        ];
+        if(self::isPrefixActive()){
+            self::$prefixing = [
+                'active' => true,
+                'level' => self::$prefixing['level']+1,
+                'uri' => self::$prefixing['uri']."/".$uri_prefix,
+                'name' => self::$prefixing['name'].'.'.$name_prefix,
+                'middleware' => $middleware
+            ];
+            return true;
+        }else{
+            self::$prefixing = [
+                'level' => self::$prefixing['level']+1,
+                'active' => true,
+                'uri' => $uri_prefix,
+                'name' => $name_prefix,
+                'middleware' => $middleware
+            ];
+            return true;
+        }
+
     }
 
     private static function endPrefix()
     {
+        $new_uri = "";
+
+        $exploded_uri = explode('/', self::$prefixing['uri']);
+
+        if(sizeof($exploded_uri) > 1) {
+            for($i = 0; $i < sizeof($exploded_uri) - 1; $i++) {
+                $new_uri .= $exploded_uri[$i] . "/";
+            }
+        }
+
+        $new_name = "";
+
+        $exploded_name = explode('.', self::$prefixing['name']);
+
+        if(sizeof($exploded_name) > 1) {
+            for($i = 0; $i < sizeof($exploded_name) - 1; $i++) {
+                $new_name .= $exploded_name[$i] . ".";
+            }
+        }
+
+        $name = "";
+
+        for($i = 0; $i < strlen($new_name) - 1; $i++) {
+            $name .= $new_name[$i];
+        }
+
         self::$prefixing = [
-            'active' => false,
-            'uri' => null,
-            'name' => null,
+            'level' => self::$prefixing['level']-1,
+            'active' => self::$prefixing['level'] != 0,
+            'uri' => $new_uri,
+            'name' => $name,
             'middleware' => null
         ];
+
     }
     private static function isPrefixActive()
     {
