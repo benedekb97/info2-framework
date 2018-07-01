@@ -1,4 +1,4 @@
-@extends('layouts.fasz');
+@extends('layouts.layout');
 
 @section('title') Info2 test @endsection
 

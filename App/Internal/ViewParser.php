@@ -40,16 +40,12 @@ class ViewParser
 
         // If there are variables passed in the view, initialise them in the temporary file
         if($view->getVariables() != null){
-            $_SESSION['temp_passed_variables'] = $view->getVariables();
-
             // Go through all the variables and set new local variable equal to it
             $contents = "<?php if(isset(\$_SESSION['temp_passed_variables'])){ foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} } ?>";
         }
 
         // Same, but is called if the original view is passed on to the parser again
         if($referenced_by != null && $referenced_by->getVariables() != null){
-            $_SESSION['temp_passed_variables'] = $referenced_by->getVariables();
-
             $contents = "<?php if(isset(\$_SESSION['temp_passed_variables'])){ foreach(\$_SESSION['temp_passed_variables'] as \$key => \$value){\$\$key = \$value;} } ?>";
         }
 

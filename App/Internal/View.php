@@ -33,6 +33,10 @@ class View
 
         $this->variables = $variables;
 
+        if($this->variables != null) {
+            $_SESSION['temp_passed_variables'] = $this->variables;
+        }
+
         $this->contents = file_get_contents($this->path);
 
         return $this;

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Internal\Controller;
+use App\Internal\Request;
 use App\Models\User;
 
 class HomeController extends Controller
@@ -21,5 +22,12 @@ class HomeController extends Controller
     public function kurva()
     {
         return view('kurva');
+    }
+
+    public function fasz()
+    {
+        $fasz = Request::get('fasz');
+
+        return view('fasz', ['fasz' => $fasz]);
     }
 }

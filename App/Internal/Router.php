@@ -138,7 +138,7 @@ class Router
 
                 // if the controller doesn't return true when called as a function it throws an exception
                 if($controller() != true){
-                    throw new ControllerNotFoundException;
+                    throw new ControllerNotFoundException();
                 }
 
                 // finds the function that needs to be called in the controller
@@ -169,14 +169,25 @@ class Router
             }
         }
 
-        // TODO: Generate cache file for 404 and 400 here
         if($bad_request == true){
-            return ViewParser::parse(ErrorController::badRequest());
+            if(!Cache::check(view('errors.400'))) {
+                Cache::cache(view('errors.400'));
+            }
+            $_SESSION['current_view'] = 'errors.400';
+            return false;
         }elseif(!$found){
-            return ViewParser::parse(ErrorController::notFound());
+            if(!Cache::check(view('errors.404'))) {
+                Cache::cache(view('errors.404'));
+            }
+            $_SESSION['current_view'] = 'errors.404';
+            return false;
         }
 
-        return ViewParser::parse(ErrorController::notFound());
+        if(Cache::check(view('errors.404'))) {
+            Cache::cache(view('errors.404'));
+        }
+        $_SESSION['current_view'] = 'errors.404';
+        return false;
     }
 
     /**

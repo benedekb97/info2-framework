@@ -5,34 +5,63 @@ namespace App\Internal;
 
 class Cache
 {
-    const CACHED_VIEWS_FILE = __DIR__ . "/../../cache/cached_views";
+    const CACHED_VIEWS_DIR = __DIR__ . "/../../cache";
+
+    const DEFAULT_CACHE_TIMEOUT = 60*60;
+
+    private static $cache_timeout;
 
     protected static $cached_views;
 
     public static function setup()
     {
-        if(!file_exists(__DIR__ . "/../../cache")){
-            mkdir(__DIR__ . "/../../cache", 0777, true);
+        if(env('DEBUG_MODE') == 'DEBUG') {
+            self::$cache_timeout = 10;
+        }else{
+            self::$cache_timeout = self::DEFAULT_CACHE_TIMEOUT;
         }
 
-        if (!file_exists(self::CACHED_VIEWS_FILE)) {
-            $file = fopen(self::CACHED_VIEWS_FILE, "w");
-            fclose($file);
+        if(!file_exists(self::CACHED_VIEWS_DIR)){
+            mkdir(self::CACHED_VIEWS_DIR, 0777, true);
         }
 
-        $file = fopen(self::CACHED_VIEWS_FILE, "r");
+        $files = scandir(self::CACHED_VIEWS_DIR);
 
-        $contents = file_get_contents(self::CACHED_VIEWS_FILE);
-
-        $explode = explode(';', $contents);
-
-        array_shift($explode);
-
-        foreach($explode as $view) {
-            self::$cached_views[] = $view;
+        for($i = 0; $i < 2; $i++){
+            array_shift($files);
         }
 
-        fclose($file);
+        if(env('VIEW_CACHING') == 'false') {
+            foreach($files as $file) {
+                unlink(self::CACHED_VIEWS_DIR . "/" . $file);
+            }
+        }
+
+        foreach($files as $file) {
+            $file_name_parts = explode('.', $file);
+
+            $view_name = "";
+            for($i = 0; $i < sizeof($file_name_parts) - 3; $i++) {
+                $view_name .= $file_name_parts[$i]. ".";
+            }
+
+            $new_view_name = "";
+            for($i = 0; $i < strlen($view_name) - 1; $i ++) {
+                $new_view_name .= $view_name[$i];
+            }
+
+            $timestamp = $file_name_parts[sizeof($file_name_parts) -3];
+
+            if(abs($timestamp - time()) > self::$cache_timeout) {
+                unlink(self::CACHED_VIEWS_DIR . "/" . $file);
+            }
+
+            if(abs($timestamp - time()) < self::$cache_timeout && env('VIEW_CACHING') != 'false') {
+                self::$cached_views[$new_view_name] = $timestamp;
+            }
+
+        }
+
     }
 
     public static function check(View $view)
@@ -41,16 +70,19 @@ class Cache
             return false;
 
         if(self::$cached_views != null)
-            return in_array($view->getName(), self::$cached_views);
+            return array_key_exists($view->getName(), self::$cached_views);
         else
             return false;
     }
 
     public static function cache(View $view)
     {
-        self::$cached_views[] = $view;
+        $timestamp = time();
 
-        $cached_file_name = $view->getName() . ".tmp.php";
+        self::$cached_views[$view->getName()] = $timestamp;
+
+        $cached_file_name = $view->getName() . "." . $timestamp . ".tmp.php";
+
         $cached_file = fopen(__DIR__ . "/../../cache/" . $cached_file_name, "w");
 
         $contents = "<?php namespace App\Internal; ?>" . ViewParser::parse($view);
@@ -58,14 +90,12 @@ class Cache
         fwrite($cached_file, $contents);
 
         fclose($cached_file);
+    }
 
+    public static function getFileName($view_name)
+    {
+        $timestamp = self::$cached_views[$view_name];
 
-        $file = fopen(self::CACHED_VIEWS_FILE, "w");
-
-        fwrite($file, ";". $view->getName());
-
-        fclose($file);
-
-        $_SESSION['cached_views'][] = $view->getName();
+        return $view_name . "." . $timestamp . ".tmp.php";
     }
 }

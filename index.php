@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Internal\Cache;
 use App\Internal\Router;
 use Exception;
 
@@ -16,13 +17,13 @@ try{
     Router::route();
 
     if(isset($_SESSION['current_view'])) {
-        include 'cache/' . $_SESSION['current_view'] . ".tmp.php";
+        include 'cache/' . Cache::getFileName($_SESSION['current_view']);
 
         unset($_SESSION['current_view']);
         if(isset($_SESSION['temp_passed_variables'])){
             unset($_SESSION['temp_passed_variables']);
         }
     }
-}catch(Exception $exception){
+}catch(\ControllerNotFoundException $exception){
     echo "Controller not found";
 }
