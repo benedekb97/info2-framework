@@ -5,3 +5,8 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.php [L]
+
+<Files ~ "update_tables">
+    Order Allow,Deny
+    Deny from all
+</Files>

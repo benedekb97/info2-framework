@@ -5,8 +5,6 @@ namespace App\Internal;
 require 'bootstrap/autoload.php';
 require 'bootstrap/functions.php';
 
-const ATTRIBUTES_REGEX = "/protected \$attributes.*\=.*\[(.*)\];/isU";
-
 Base::db_connect(env('MYSQL_HOST'), env('MYSQL_USER'), env('MYSQL_PASSWORD'), env('MYSQL_DATABASE'));
 
 
