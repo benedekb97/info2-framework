@@ -33,4 +33,36 @@ class Base
     {
         return self::$models;
     }
+
+    public static function update()
+    {
+        foreach(self::getModels() as $model) {
+            $model = 'App\Models\\' . $model;
+
+            if(!$model::checkTable()) {
+                $model::dropTable();
+                $model::createTable();
+            }
+        }
+
+        echo "Database updated!\n";
+    }
+
+    public static function seed()
+    {
+        Seeder::seed();
+
+        echo "Database seeded!\n";
+    }
+
+    public static function trunc()
+    {
+        foreach(self::getModels() as $model) {
+            $model = 'App\Models\\' . $model;
+
+            $model::trunc();
+        }
+
+        echo "Database truncated!\n";
+    }
 }

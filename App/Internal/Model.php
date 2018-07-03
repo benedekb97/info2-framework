@@ -135,4 +135,13 @@ class Model extends Base
 
         parent::$mysql->query($query);
     }
+
+    public static function trunc()
+    {
+        $table_name = self::getTable();
+
+        $query = "TRUNCATE TABLE $table_name";
+
+        parent::$mysql->query($query);
+    }
 }

@@ -332,6 +332,7 @@ class Router
         ];
 
     }
+
     private static function isPrefixActive()
     {
         return self::$prefixing['active'] == true;
