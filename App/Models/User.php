@@ -6,9 +6,14 @@ use App\Internal\Model;
 
 class User extends Model
 {
-    protected $attributes = ['email', 'password', 'salt'];
+    protected static $attributes = [
+        ['email', 'varchar(1024)'],
+        ['password', 'varchar(40)'],
+        ['salt', 'varchar(64)' ],
+        ['id', 'int(11) primary key auto_increment']
+    ];
 
-    protected $table = 'users';
+    protected static $table = 'users';
 
     protected $id;
     protected $email;

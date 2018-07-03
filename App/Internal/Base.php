@@ -26,6 +26,9 @@ class Base
         self::$mysql->query("SET NAMES utf8");
     }
 
+    /**
+     * @return array[Model]
+     */
     public static function getModels()
     {
         return self::$models;
