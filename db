@@ -20,6 +20,10 @@ foreach($argv as $argument) {
     if(in_array($argument, $arguments) && $argument != 'help') {
         Base::$argument();
     }else{
-        echo "seed: Seed the database\ntrunc: Truncate all tables\nupdate: Update the databases\n";
+        echo "Usage: php db <command>\n";
+        echo "--- Commands ---\n";
+        echo "seed: Seed the database\n";
+        echo "trunc: Truncate all tables\n";
+        echo "update: Update the databases\n";
     }
 }
