@@ -65,4 +65,18 @@ class Base
 
         echo "Database truncated!\n";
     }
+
+    public static function clearCache()
+    {
+        $cached_files = scandir(Cache::CACHED_VIEWS_DIR);
+
+        array_shift($cached_files);
+        array_shift($cached_files);
+
+        foreach($cached_files as $file) {
+            unlink(Cache::CACHED_VIEWS_DIR . "/$file");
+        }
+
+        echo "View cache cleared\n";
+    }
 }

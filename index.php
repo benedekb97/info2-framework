@@ -24,6 +24,6 @@ try{
             unset($_SESSION['temp_passed_variables']);
         }
     }
-}catch(\ControllerNotFoundException $exception){
-    echo "Controller not found";
+}catch(Exception $exception){
+    die($exception->getMessage());
 }

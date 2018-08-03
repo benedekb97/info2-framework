@@ -19,15 +19,11 @@ class HomeController extends Controller
         return view('index', ['users' => $users]);
     }
 
-    public function kurva()
+    /**
+     * @return \App\Internal\View
+     */
+    public function stump()
     {
-        return view('kurva');
-    }
-
-    public function fasz()
-    {
-        $fasz = Request::get('fasz');
-
-        return view('fasz', ['fasz' => $fasz]);
+        return view('stump', ['user' => Request::get('user')]);
     }
 }

@@ -11,7 +11,8 @@ $arguments = [
     'seed',
     'trunc',
     'update',
-    'help'
+    'help',
+    'clearCache'
 ];
 
 array_shift($argv);

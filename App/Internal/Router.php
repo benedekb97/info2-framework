@@ -3,7 +3,9 @@
 namespace App\Internal;
 
 use App\Controllers\ErrorController;
-use ControllerNotFoundException;
+use App\Exceptions\ControllerNotFoundException;
+use App\Exceptions\RouteNotFoundException;
+use Exception;
 
 class Router
 {
@@ -127,6 +129,11 @@ class Router
         return $match_index;
     }
 
+    /**
+     * @return bool
+     * @throws ControllerNotFoundException
+     * @throws Exception
+     */
     public static function route()
     {
         // Gets the URI and the request type
@@ -165,14 +172,14 @@ class Router
                 }
 
                 // finds the controller the route is requesting
-                $controller = 'App\Controllers\\' . ucfirst(explode('@',$match['route']['controller'])[0]);
+                $controller_name = 'App\Controllers\\' . ucfirst(explode('@',$match['route']['controller'])[0]);
 
                 // creates an instance of it
-                $controller = new $controller;
+                $controller = new $controller_name;
 
                 // if the controller doesn't return true when called as a function it throws an exception
                 if($controller() != true){
-                    throw new ControllerNotFoundException();
+                    throw new ControllerNotFoundException($controller_name);
                 }
 
                 // finds the function that needs to be called in the controller
@@ -194,9 +201,16 @@ class Router
                     }
                 }
 
-                $view = $controller->$function();
+                try {
+                    $view = $controller->$function();
+                } catch(Exception $exception) {
+                    throw $exception;
+                }
 
-                $_SESSION['current_view'] = $view->getName();
+                if($view != null) {
+                    $_SESSION['current_view'] = $view->getName();
+                }
+
 
                 if(!Cache::check($view)) {
                     Cache::cache($view);
@@ -240,7 +254,8 @@ class Router
     /**
      * @param $name
      * @param array $vars
-     * @return bool|string
+     * @return string
+     * @throws RouteNotFoundException
      */
     public static function getLink($name, $vars = []){
 
@@ -262,13 +277,22 @@ class Router
 
         }
 
-        return false;
-
+        throw new RouteNotFoundException($name);
     }
 
+    /**
+     * @param $route
+     * @param array $vars
+     * @throws RouteNotFoundException
+     */
     public static function redirect($route, $vars = [])
     {
-        header("Location: ".self::getLink($route, $vars));
+
+        try{
+            header("Location: ".self::getLink($route, $vars));
+        } catch(RouteNotFoundException $exception) {
+            throw $exception;
+        }
     }
 
     private static function startPrefix($uri_prefix, $name_prefix, $middleware)

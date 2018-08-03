@@ -9,8 +9,11 @@ use App\Internal\Router;
 
 class AuthController extends Controller
 {
-
-    public static function login(){
+    /**
+     * @return string
+     * @throws \App\Exceptions\RouteNotFoundException
+     */
+    public function login(){
 
         if(User::authenticate(Request::post('email'), Request::post('password'))){
             $email = Request::post('email');
@@ -18,13 +21,18 @@ class AuthController extends Controller
             $_SESSION['user_id'] = User::findByEmail($email)->getId();
 
             Router::redirect('index');
-            die();
         }else{
-            Router::redirect('index.login');
+            Router::redirect('auth.login');
         }
+
+        return self::class;
     }
 
-    public static function logout(){
+    /**
+     * @throws \App\Exceptions\RouteNotFoundException
+     */
+    public function logout()
+    {
         unset($_SESSION['user_id']);
 
         Router::redirect('index');
